@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <!-- Replace inline style with library reference -->
+  <?!= StylesLibrary.getStylesheet(); ?>
+  
+  <!-- Keep these in your main app's HTML -->
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body>
+  <!-- Theme Toggle -->
+  <div class="theme-toggle">
+    <button onclick="toggleTheme()" class="theme-button">
+      <span class="material-icons" id="theme-icon">dark_mode</span>
+    </button>
+  </div>
+
+  <div class="container">
+    <!-- Main Content -->
+    <div id="main-content">
+      <!-- Logo -->
+      <div class="logo-container">
+        <img src="https://lh3.googleusercontent.com/d/1EXK0JgGBqmPUs6Sh9Fln7mZcB8LCpqI-" alt="Company Logo" class="logo">
+      </div>
+
+      <!-- Main Menu Grid -->
+      <div id="main-menu" class="shortcuts-grid">
+        <a class="shortcut-item" onclick="showLocationSelect()">
+          <div class="shortcut-button">
+            <span class="material-icons">edit</span>
+          </div>
+          <span class="shortcut-label">Enter Checks</span>
+        </a>
+        <a class="shortcut-item" onclick="verifyCheckFormShow()">
+          <div class="shortcut-button">
+            <span class="material-icons">fact_check</span>
+          </div>
+          <span class="shortcut-label">Verify Checks</span>
+        </a>
+        <a class="shortcut-item" onclick="requestMoreChecks()">
+          <div class="shortcut-button">
+            <span class="material-icons">add_circle</span>
+          </div>
+          <span class="shortcut-label">Request Checks</span>
+        </a>
+        <a class="shortcut-item" onclick="showHelp()">
+          <div class="shortcut-button">
+            <span class="material-icons">help</span>
+          </div>
+          <span class="shortcut-label">Get Help</span>
+        </a>
+      </div>
+
+      <!-- Location Selection -->
+     <div id="location-select" class="form-container">
+        <div class="form-header">
+          <button onclick="returnHome()" class="back-button">
+            <span class="material-icons" style="color: var(--text-secondary);">arrow_back</span>
+          </button>
+          <h2 class="form-title">Select Location to Enter Checks</h2>
+        </div>
+        <div class="sites-grid">
+            <? for (var i = 0; i < siteNames.length; i++) { ?>
+              <button class="site-button" onclick="loadSite('<?= siteNames[i] ?>')">
+                <?= siteNames[i] ?>
+              </button>
+            <? } ?>
+          </div>
+        </div>
+
+    <!-- Check Entry Form -->
+      <div id="check-form" class="form-container">
+        <div class="form-header">
+          <button onclick="returnHome()" class="back-button">
+            <span class="material-icons" style="color: var(--text-secondary);">arrow_back</span>
+          </button>
+          <h2 id="form-title" class="form-title">Enter Check Information</h2>
+        </div>
+
+      <form id="checkEntryForm" onsubmit="submitForm(event)">
+        <input type="hidden" id="siteName" name="siteName">
+
+        <!-- Required Fields -->
+        <div class="form-group">
+          <label for="checkNumber" class="required">Check Number</label>
+          <input type="text" id="checkNumber" name="checkNumber" required>
+          <div class="error-message" id="checkNumber-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="firstName" class="required">First Name</label>
+          <input type="text" id="firstName" name="firstName" required>
+          <div class="error-message" id="firstName-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName" class="required">Last Name</label>
+          <input type="text" id="lastName" name="lastName" required>
+          <div class="error-message" id="lastName-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="checkDate" class="required">Date on Check</label>
+          <input type="date" id="checkDate" name="checkDate" required>
+          <div class="error-message" id="checkDate-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="amount" class="required">Amount</label>
+          <input type="number" id="amount" name="amount" step="0.01" required>
+          <div class="error-message" id="amount-error"></div>
+        </div>
+
+        <!-- Optional Fields -->
+        <div class="form-group">
+          <label for="subjectId">Subject ID</label>
+          <input type="text" id="subjectId" name="subjectId">
+          <div class="error-message" id="subjectId-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="studyName">Study Name</label>
+          <input type="text" id="studyName" name="studyName">
+          <div class="error-message" id="studyName-error"></div>
+        </div>
+
+        <!-- Checkboxes -->
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="isSubI" name="isSubI">
+            Sub-I
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="isReferral" name="isReferral">
+            Referral
+          </label>
+        </div>
+
+        <!-- Form Buttons -->
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+          <button type="button" class="form-button primary-form-button" id="submitButton">
+            Submit & Add Next Check
+          </button>
+          <button type="button" class="form-button primary-form-button" id="submitReturnButton">
+            Submit & Return Home
+          </button>
+          <button type="button" class="form-button secondary-form-button" onclick="returnHome()">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Verify Check Form -->
+      <div id="verify-form" class="form-container">
+        <div class="form-header">
+          <button onclick="returnHome()" class="back-button">
+            <span class="material-icons" style="color: var(--text-secondary);">arrow_back</span>
+          </button>
+          <h2 class="form-title">Verify Check Information</h2>
+        </div>
+      <form id="verifyCheckForm" onsubmit="return verifyCheckSubmit(event)">
+        <div class="form-group">
+          <label for="verifyCheckNumber" class="required">Check Number</label>
+          <input type="text" id="verifyCheckNumber" name="verifyCheckNumber" required>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+          <button type="submit" class="form-button primary-form-button">
+            Verify Check
+          </button>
+          <button type="button" class="form-button secondary-form-button" onclick="returnHome()">
+            Cancel
+          </button>
+        </div>
+      </form>
+
+<div id="checkResults" class="check-results-container" style="display: none;">
+  <div class="results-card">
+    <div class="form-header">
+     <h2 class="form-title">Check Details</h2>
+    </div>
+
+    <div class="results-header">
+      <div class="results-count">
+        Result <span id="currentResult">1</span> of <span id="totalResults">1</span>
+      </div>
+      <div class="pagination-controls">
+        <button onclick="previousResult()" class="form-button secondary-form-button" id="prevButton">
+          <span class="material-icons">chevron_left</span>
+        </button>
+        <button onclick="nextResult()" class="form-button secondary-form-button" id="nextButton">
+          <span class="material-icons">chevron_right</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="resultsContainer" class="results-content">
+      <!-- Results will be dynamically inserted here -->
+    </div>
+  </div>
+</div>
+  
+
+  
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <h3 class="modal-title" id="modal-title"></h3>
+        <p class="modal-message" id="modal-message"></p>
+        <div class="button-group">
+          <button class="form-button primary-form-button" onclick="closeModal()">OK</button>
+        </div>
+      </div>
+    </div>
+    </div>
+<!-- Request Checks Modal -->
+<div id="request-checks-modal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeRequestModal()">&times;</span>
+    <h3 class="form-title">Request Additional Checks</h3>
+    <form id="requestChecksForm" onsubmit="submitCheckRequest(event)">
+      <div class="form-group">
+        <label for="requestSite" class="required">Site Name</label>
+        <select id="requestSite" required>
+          <? for (var i = 0; i < siteNames.length; i++) { ?>
+            <option value="<?= siteNames[i] ?>"><?= siteNames[i] ?></option>
+          <? } ?>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="remainingChecks" class="required">Number of Checks Remaining</label>
+        <input type="number" id="remainingChecks" required min="0">
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <button type="submit" class="form-button primary-form-button">
+          Submit Request
+        </button>
+        <button type="button" class="form-button secondary-form-button" onclick="closeRequestModal()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div id="help-modal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeHelpModal()">&times;</span>
+    <h3 class="form-title">Get Help</h3>
+    <form id="helpForm" onsubmit="submitHelpRequest(event)">
+      <div class="form-group">
+        <label for="helpSite" class="required">Site Name</label>
+        <select id="helpSite" required>
+          <? for (var i = 0; i < siteNames.length; i++) { ?>
+            <option value="<?= siteNames[i] ?>"><?= siteNames[i] ?></option>
+          <? } ?>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="senderEmail" class="required">Email</label>
+        <input type="email" id="senderEmail" required>
+      </div>
+      <div class="form-group">
+        <label for="helpQuestion" class="required">Message</label>
+        <textarea id="helpQuestion" required rows="4"></textarea>
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <button type="submit" class="form-button primary-form-button">
+          Submit
+        </button>
+        <button type="button" class="form-button secondary-form-button" onclick="closeHelpModal()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+  <!-- Toast Message -->
+    <div id="toast" class="toast-message" style="display: none;"></div>
+<script>
+  let currentSite = '';
+  let currentResultIndex = 0;
+  let currentResults = [];  
+  // Initialization
+  window.onload = function() {
+    initializeDirectSite();
+    initializeFormHandlers();
+    initializeDefaultDate();
+  }
+
+  function initializeDirectSite() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const directSite = urlParams.get('site');
+    if (directSite) {
+      loadSite(directSite);
+    }
+  }
+
+  function initializeFormHandlers() {
+    document.getElementById('submitButton').onclick = function(e) {
+      e.preventDefault();
+      submitForm('continue');
+    };
+
+    document.getElementById('submitReturnButton').onclick = function(e) {
+      e.preventDefault();
+      submitForm('return');
+    };
+  }
+
+  function initializeDefaultDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkDate').value = today;
+  }
+
+    // Navigation Functions
+  function loadSite(siteName) {
+    currentSite = siteName;
+    document.getElementById('siteName').value = siteName;
+    document.getElementById('form-title').textContent = `Enter Check Information - ${siteName}`;
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('check-form').style.display = 'block';
+    document.getElementById('verify-form').style.display = 'none';
+    document.getElementById('location-select').style.display = 'none';
+  }
+
+  function showLocationSelect() {
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('location-select').style.display = 'block';
+    document.getElementById('check-form').style.display = 'none';
+    document.getElementById('verify-form').style.display = 'none';
+  }
+
+  function verifyCheckFormShow() {
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('check-form').style.display = 'none';
+    document.getElementById('verify-form').style.display = 'block';
+    document.getElementById('location-select').style.display = 'none';
+  }
+
+  function returnHome() {
+    document.getElementById('check-form').style.display = 'none';
+    document.getElementById('verify-form').style.display = 'none';
+    document.getElementById('location-select').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'grid';
+  }
+
+  // Form Submission Functions
+  function submitForm(action) {
+    if (!validateForm()) return;
+    
+    const data = collectFormData();
+    
+    google.script.run
+      .withSuccessHandler(nextCheckNumber => {
+        showToast('Check added successfully!');
+        resetForm(nextCheckNumber);
+        if (action === 'return') {
+          returnHome();
+        }
+      })
+      .submitCheck(data);
+  }
+
+  function validateForm() {
+    let isValid = true;
+    const requiredFields = ['checkNumber', 'firstName', 'lastName', 'checkDate', 'amount'];
+
+    requiredFields.forEach(field => {
+      const input = document.getElementById(field);
+      const errorDiv = document.getElementById(`${field}-error`);
+
+      if (!input.value) {
+        errorDiv.textContent = 'This field is required.';
+        errorDiv.style.display = 'block';
+        input.classList.add('error');
+        isValid = false;
+      } else {
+        errorDiv.textContent = '';
+        errorDiv.style.display = 'none';
+        input.classList.remove('error');
+      }
+    });
+
+    return isValid;
+  }
+
+  function collectFormData() {
+    return {
+      siteName: currentSite,
+      checkNumber: document.getElementById('checkNumber').value,
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      checkDate: document.getElementById('checkDate').value,
+      amount: document.getElementById('amount').value,
+      subjectId: document.getElementById('subjectId').value,
+      studyName: document.getElementById('studyName').value,
+      isSubI: document.getElementById('isSubI').checked,
+      isReferral: document.getElementById('isReferral').checked
+    };
+  }
+
+function resetForm() {
+  const currentCheckNumber = document.getElementById('checkNumber').value;
+  document.getElementById('checkEntryForm').reset();
+  document.getElementById('checkDate').value = new Date().toISOString().split('T')[0];
+  
+  // Set next check number
+  if (currentCheckNumber) {
+    const nextCheckNumber = (parseInt(currentCheckNumber) + 1).toString();
+    document.getElementById('checkNumber').value = nextCheckNumber;
+  }
+}
+
+  // Verify Check Functions
+  function verifyCheckSubmit(event) {
+    event.preventDefault();
+    const checkNumber = document.getElementById('verifyCheckNumber').value;
+
+    google.script.run
+      .withSuccessHandler(handleVerifyCheckResponse)
+      .verifyCheck(checkNumber);
+    
+    return false;
+  }
+
+function handleVerifyCheckResponse(checkData) {
+  const resultsDiv = document.getElementById('checkResults');
+  const resultsContainer = document.getElementById('resultsContainer');
+  
+  if (checkData && Array.isArray(checkData) && checkData.length > 0) {
+    // Store results globally
+    currentResults = checkData;
+    currentResultIndex = 0;
+    
+    // Show notification for multiple results
+    if (checkData.length > 1) {
+      showModal(
+        'Multiple Checks Found', 
+        `Found ${checkData.length} checks with check number ${checkData[0].checkNumber}`
+      );
+    }
+    
+    // Update pagination display
+    updatePaginationDisplay();
+    
+    // Show first result
+    displayCurrentResult();
+    
+    resultsDiv.style.display = 'block';
+  } else if (checkData && !Array.isArray(checkData)) {
+    // Handle single result
+    currentResults = [checkData];
+    currentResultIndex = 0;
+    updatePaginationDisplay();
+    displayCurrentResult();
+    resultsDiv.style.display = 'block';
+  } else {
+    showModal('Check Not Found', 'No checks found with that check number.');
+    resultsDiv.style.display = 'none';
+  }
+}
+
+// Function to update pagination display
+function updatePaginationDisplay() {
+  const currentResultSpan = document.getElementById('currentResult');
+  const totalResultsSpan = document.getElementById('totalResults');
+  const prevButton = document.getElementById('prevButton');
+  const nextButton = document.getElementById('nextButton');
+  
+  currentResultSpan.textContent = currentResultIndex + 1;
+  totalResultsSpan.textContent = currentResults.length;
+  
+  // Update button states
+  prevButton.disabled = currentResultIndex === 0;
+  nextButton.disabled = currentResultIndex === currentResults.length - 1;
+  
+  // Update button styles based on state
+  prevButton.style.opacity = prevButton.disabled ? '0.5' : '1';
+  nextButton.style.opacity = nextButton.disabled ? '0.5' : '1';
+}
+
+// Function to display current result
+function displayCurrentResult() {
+  const resultsContainer = document.getElementById('resultsContainer');
+  resultsContainer.innerHTML = ''; // Clear current display
+  
+  const resultCard = createResultCard(currentResults[currentResultIndex]);
+  resultsContainer.appendChild(resultCard);
+}
+
+// Navigation functions
+function nextResult() {
+  if (currentResultIndex < currentResults.length - 1) {
+    currentResultIndex++;
+    updatePaginationDisplay();
+    displayCurrentResult();
+  }
+}
+
+function previousResult() {
+  if (currentResultIndex > 0) {
+    currentResultIndex--;
+    updatePaginationDisplay();
+    displayCurrentResult();
+  }
+}
+
+// Updated createResultCard function
+function createResultCard(check) {
+  const card = document.createElement('div');
+  
+  const fields = [
+    { label: 'Check Number', value: check.checkNumber },
+    { label: 'Name', value: check.name },
+    { label: 'Date', value: check.date },
+    { label: 'Amount', value: check.amount },
+    { label: 'Subject ID', value: check.subjectId },
+    { label: 'Study Name', value: check.studyName },
+    { label: 'Site Name', value: check.siteName },
+    { label: 'Sub-I', value: check.isSubI },
+    { label: 'Referral', value: check.isReferral },
+    { label: 'Bank Account', value: check.bankAccount }
+  ];
+  
+  const content = fields.map(field => `
+    <div class="check-field">
+      <span class="check-field-label">${field.label}</span>
+      <span class="check-field-value">${field.value || ''}</span>
+    </div>
+  `).join('');
+  
+  card.innerHTML = content;
+  return card;
+}
+  // UI Feedback Functions
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.display = 'block';
+
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, 3000);
+  }
+
+  function showModal(title, message) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-message').textContent = message;
+    document.getElementById('modal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  // Theme Functions
+  function toggleTheme() {
+    const html = document.documentElement;
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (html.getAttribute('data-theme') === 'dark') {
+      html.removeAttribute('data-theme');
+      themeIcon.textContent = 'dark_mode';
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = 'light_mode';
+      localStorage.setItem('theme', 'dark');
+    }
+  }
+
+  // Initialize theme on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      themeIcon.textContent = 'light_mode';
+    }
+  });
+
+  function requestMoreChecks() {
+  document.getElementById('request-checks-modal').style.display = 'block';
+}
+
+function closeRequestModal() {
+  document.getElementById('request-checks-modal').style.display = 'none';
+  document.getElementById('requestChecksForm').reset();
+}
+
+function submitCheckRequest(event) {
+  event.preventDefault();
+  const site = document.getElementById('requestSite').value;
+  const remaining = document.getElementById('remainingChecks').value;
+
+  google.script.run
+    .withSuccessHandler(() => {
+      showToast('Check request submitted successfully!');
+      closeRequestModal();
+    })
+    .withFailureHandler(error => {
+      showModal('Error', 'Failed to submit request: ' + error);
+    })
+    .sendCheckRequest(site, remaining);
+}
+
+function showHelp() {
+  document.getElementById('help-modal').style.display = 'block';
+}
+
+function closeHelpModal() {
+  document.getElementById('help-modal').style.display = 'none';
+  document.getElementById('helpForm').reset();
+}
+
+function submitHelpRequest(event) {
+  event.preventDefault();
+  const data = {
+    site: document.getElementById('helpSite').value,
+    sender: document.getElementById('senderEmail').value,
+    question: document.getElementById('helpQuestion').value
+  };
+
+  google.script.run
+    .withSuccessHandler(() => {
+      showToast('Help request submitted successfully!');
+      closeHelpModal();
+    })
+    .withFailureHandler(error => {
+      showModal('Error', 'Failed to submit help request: ' + error);
+    })
+    .sendHelpRequest(data);
+}
+</script>
+    
+</body>
+
+</html>
